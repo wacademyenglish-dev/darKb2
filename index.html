@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WOLFLIX Masterclass: Dark Matter</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;600;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dm: {
+                            amber: '#b45309',     /* Cozy Home */
+                            wood: '#451a03',
+                            warmBg: '#292524',
+                            black: '#000000',     /* The Box */
+                            neonBlue: '#38bdf8',
+                            neonPurple: '#c026d3',
+                            neonRed: '#ef4444',
+                            gray: '#1e293b'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Share Tech Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* ==================================================================
+           DYNAMIC THEME ENGINE: COZY HOME vs MULTIVERSE CORRIDOR
+           ================================================================== */
+        
+        :root {
+            /* Theme 1: Chicago Family Home (Warm, Amber, Cinematic) */
+            --bg-top: #292524;
+            --bg-bot: #1c1917;
+            --panel-bg: rgba(69, 26, 3, 0.6); /* Wood tint */
+            --text-main: #f8fafc;
+            --text-muted: #d6d3d1;
+            --accent: #d97706; /* Amber */
+            --accent-glow: rgba(217, 119, 6, 0.4);
+            --border-color: #78350f;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            --btn-text: #fff;
+            --font-display: 'Playfair Display', serif;
+            --bg-pattern: radial-gradient(rgba(217, 119, 6, 0.05) 2px, transparent 2px);
+        }
+
+        body.theme-box {
+            /* Theme 2: The Box (Pitch Black, Infinite Corridors, Neon) */
+            --bg-top: #000000;
+            --bg-bot: #020617;
+            --panel-bg: rgba(15, 23, 42, 0.8); 
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8; /* Neon Blue */
+            --accent-glow: rgba(56, 189, 248, 0.6);
+            --border-color: #1e293b;
+            --card-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+            --btn-text: #000000;
+            --font-display: 'Share Tech Mono', monospace;
+            /* Infinite grid perspective trick */
+            --bg-pattern: 
+                linear-gradient(rgba(56, 189, 248, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(56, 189, 248, 0.1) 1px, transparent 1px);
+        }
+
+        body {
+            background-color: var(--bg-bot);
+            background-image: var(--bg-pattern), linear-gradient(135deg, var(--bg-top), var(--bg-bot));
+            background-size: 40px 40px;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            transition: background-color 1s ease, color 1s ease;
+            overflow: hidden;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* Perspective Grid specific to The Box */
+        .perspective-grid {
+            position: fixed; top: 0; left: -50vw; width: 200vw; height: 100vh;
+            background-image: 
+                linear-gradient(rgba(56, 189, 248, 0.1) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(56, 189, 248, 0.1) 2px, transparent 2px);
+            background-size: 50px 50px;
+            transform: perspective(500px) rotateX(60deg) translateY(-100px);
+            opacity: 0; transition: opacity 2s ease; z-index: 0; pointer-events: none;
+        }
+        body.theme-box .perspective-grid { opacity: 1; animation: gridMove 5s linear infinite; }
+        @keyframes gridMove { from { background-position: 0 0; } to { background-position: 0 50px; } }
+
+        /* Typography */
+        h1, h2, h3, .font-display { font-family: var(--font-display); transition: font-family 0s 1s; }
+        body.theme-box h1, body.theme-box h2, body.theme-box h3 { letter-spacing: 2px; text-shadow: 0 0 10px var(--accent); }
+
+        /* Component Styles bound to CSS Variables */
+        .dm-panel {
+            background: var(--panel-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color); box-shadow: var(--card-shadow);
+            border-radius: 0.75rem; transition: all 0.5s ease; position: relative; z-index: 10;
+        }
+
+        .dm-btn {
+            background-color: var(--accent); color: var(--btn-text);
+            font-family: var(--font-display); font-size: 1.1rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            box-shadow: 0 0 20px var(--accent-glow); transition: all 0.3s ease;
+            border-radius: 0.5rem; border: 1px solid transparent;
+        }
+        .dm-btn:hover { transform: scale(1.02); filter: brightness(1.2); box-shadow: 0 0 30px var(--accent-glow); }
+        .dm-btn:active { transform: scale(0.98); }
+
+        .dm-btn-outline { background-color: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-color); transition: all 0.3s; }
+        .dm-btn-outline:hover { border-color: var(--accent); background-color: var(--accent-glow); color: #fff;}
+
+        .text-accent { color: var(--accent); transition: color 0.5s ease; }
+        .border-accent { border-color: var(--accent); transition: border-color 0.5s ease; }
+
+        /* --- Scroll & Slide Layout --- */
+        .slide {
+            display: none; opacity: 0; width: 100%; height: 100%;
+            overflow-y: auto; position: relative; z-index: 10;
+        }
+        .slide.active { display: block; animation: cinematicFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .page-content {
+            min-height: 100%; margin: 0 auto; width: 100%; max-width: 1000px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 4rem 1.5rem 8rem 1.5rem; text-align: center;
+        }
+
+        @keyframes cinematicFade {
+            from { opacity: 0; transform: scale(0.98); filter: blur(4px); }
+            to { opacity: 1; transform: scale(1); filter: blur(0); }
+        }
+
+        /* --- GLITCH TRANSITION --- */
+        #glitch-overlay {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: none; pointer-events: none; opacity: 0; mix-blend-mode: difference;
+        }
+        .glitch-anim { display: block !important; animation: superGlitch 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+        @keyframes superGlitch {
+            0% { opacity: 0; filter: invert(0); transform: scale(1); }
+            10% { opacity: 1; filter: invert(1) hue-rotate(90deg); transform: scale(1.05) translate(10px, -10px); }
+            20% { opacity: 0; transform: scale(1) translate(-10px, 10px); }
+            30% { opacity: 1; filter: invert(1) hue-rotate(180deg); transform: scale(1.1) skewX(5deg); }
+            40% { opacity: 0; transform: scale(1); }
+            50% { opacity: 1; filter: invert(0) sepia(1); transform: translate(5px, 5px); }
+            100% { opacity: 0; filter: invert(0); transform: scale(1); display: none; }
+        }
+
+        /* Video Glitch Border */
+        .video-container { transition: all 0.5s; }
+        .glitch-border { animation: borderGlitch 0.2s infinite; border-color: #38bdf8 !important; box-shadow: 0 0 30px #38bdf8 !important; }
+        @keyframes borderGlitch { 0% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(-2px, -2px); } 60% { transform: translate(2px, 2px); } 80% { transform: translate(2px, -2px); } 100% { transform: translate(0); } }
+
+        /* --- Interactive Elements --- */
+        .interactive-card { cursor: pointer; transition: all 0.3s ease; }
+        .interactive-card:hover { border-color: var(--accent); box-shadow: 0 10px 30px var(--accent-glow); transform: translateY(-3px); }
+        .reveal-content { max-height: 0; opacity: 0; overflow: hidden; transition: all 0.5s ease; }
+        .interactive-card.open .reveal-content { max-height: 400px; opacity: 1; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--border-color); }
+
+        .follow-up-box {
+            background: linear-gradient(90deg, var(--accent-glow) 0%, transparent 100%);
+            border-left: 4px solid var(--accent);
+            padding: 0.75rem 1rem; border-radius: 0 0.5rem 0.5rem 0; margin-top: 1rem;
+        }
+
+        /* Speaking Starter */
+        .speaking-starter {
+            background: rgba(0,0,0,0.4); border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent); border-radius: 0.5rem;
+            padding: 1.25rem 1.5rem; margin-top: 1.5rem; text-align: left;
+        }
+
+        /* Neon Doors Minigame */
+        .neon-door {
+            height: 250px; border: 4px solid #1e293b; border-radius: 0.5rem;
+            background: #020617; position: relative; cursor: pointer; transition: all 0.3s;
+            display: flex; flex-direction: column; items-center; justify-content: center;
+        }
+        .neon-door:hover { border-color: var(--accent); box-shadow: 0 0 30px var(--accent-glow), inset 0 0 20px var(--accent-glow); transform: scale(1.02); }
+        .neon-door.unlocked { border-color: #22c55e; box-shadow: 0 0 30px rgba(34,197,94,0.6), inset 0 0 50px rgba(34,197,94,0.3); background: rgba(34,197,94,0.1); }
+        .door-content { opacity: 0; transition: opacity 0.5s; position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem; background: rgba(2,6,23,0.9); }
+        .neon-door.unlocked .door-content { opacity: 1; z-index: 20; }
+
+        /* Praise Pop-up Animation */
+        @keyframes popUpPraise {
+            0% { transform: translate(-50%, -50%) scale(0.2) rotate(-5deg); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.1) rotate(2deg); opacity: 1; filter: drop-shadow(0 0 20px var(--accent)); }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; filter: drop-shadow(0 0 10px var(--accent)); }
+        }
+        .praise-anim { animation: popUpPraise 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+    </style>
+</head>
+<body class="selection:bg-[var(--accent)] selection:text-[var(--btn-text)]">
+
+    <div class="perspective-grid"></div>
+    <div id="glitch-overlay"></div>
+
+    <!-- GIANT PRAISE POPUP -->
+    <div id="praise-popup" class="fixed top-1/2 left-1/2 hidden text-accent font-black text-4xl md:text-6xl text-center z-[10000] drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)] uppercase tracking-widest w-full pointer-events-none transform -translate-x-1/2 -translate-y-1/2 font-display">
+        <span id="praise-text" class="bg-[var(--panel-bg)] px-8 py-4 border-2 border-accent rounded-xl inline-block shadow-2xl backdrop-blur-md"></span>
+    </div>
+
+    <!-- TOP BAR -->
+    <header class="fixed top-0 left-0 w-full h-16 dm-panel rounded-none border-t-0 border-l-0 border-r-0 border-b z-40 flex items-center justify-between px-4 md:px-6 transition-colors duration-1000">
+        <div class="flex items-center gap-2 md:gap-4">
+            <span class="text-2xl drop-shadow-md opacity-80" id="header-icon">🕰️</span>
+            <h1 class="font-display font-black tracking-widest text-lg text-[var(--text-main)] uppercase hidden md:block" id="header-title">Teacher's Guide</h1>
+            <span class="border border-accent text-accent font-bold text-[10px] md:text-xs px-2 md:px-3 py-1 rounded tracking-widest md:ml-2 uppercase">LEVEL: B2/C1</span>
+        </div>
+        <div class="flex items-center gap-3 md:gap-4">
+            <!-- Praise System -->
+            <div class="flex items-center gap-2 bg-[var(--text-main)]/5 border border-[var(--border-color)] rounded px-2 py-1 shadow-inner mr-1 md:mr-2">
+                <span class="hidden lg:inline text-[10px] opacity-50 font-bold mr-1 uppercase tracking-widest">Praise:</span>
+                <button onclick="triggerPraise('REALITY UNLOCKED! 🌌')" class="text-lg hover:scale-125 transition-transform drop-shadow-md" title="Reality Unlocked!">🌌</button>
+                <button onclick="triggerPraise('PERFECT CHOICE! 🚪')" class="text-lg hover:scale-125 transition-transform drop-shadow-md" title="Perfect Choice!">🚪</button>
+                <button onclick="triggerPraise('MIND BENDING! 🧠')" class="text-lg hover:scale-125 transition-transform drop-shadow-md" title="Mind Bending!">🧠</button>
+            </div>
+
+            <button onclick="toggleFullscreen()" class="font-display text-[10px] md:text-xs font-bold text-gray-400 border border-gray-600 rounded px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors hidden sm:block tracking-widest uppercase">
+                [ FULLSCREEN ]
+            </button>
+            <button onclick="toggleNotepad()" class="font-display text-[10px] md:text-xs font-bold dm-btn px-4 py-1.5 uppercase tracking-widest shadow-md">
+                Notes
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="pt-16 pb-20 w-full flex-1 relative flex flex-col z-10 overflow-hidden">
+        
+        <!-- ========================================== -->
+        <!-- ACT I: THE ORIGINAL REALITY (Pages 1-6)    -->
+        <!-- ========================================== -->
+
+        <!-- PAGE 1: COVER -->
+        <section class="slide active">
+            <div class="page-content">
+                <div class="w-full max-w-[200px] md:max-w-[280px] dm-panel p-2 mb-6 shadow-2xl relative border-4 border-[var(--border-color)] mx-auto flex justify-center bg-black">
+                    <img src="https://m.media-amazon.com/images/M/MV5BMzQwNDI0NTAtN2JjOC00MmE3LTg1Y2EtOTdjZDNhMDhjMmNhXkEyXkFqcGc@._V1_.jpg" alt="Dark Matter Cover" class="w-full h-auto max-h-[45vh] object-cover opacity-90 hover:opacity-100 transition-opacity duration-500 rounded">
+                </div>
+                <span class="text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-muted mb-3 border border-[var(--border-color)] px-4 py-1 rounded-full bg-[var(--panel-bg)]">WOLFLIX Masterclass</span>
+                <h1 class="text-5xl md:text-8xl font-display font-black mb-2 text-white drop-shadow-lg uppercase tracking-widest">Dark Matter</h1>
+                <h2 class="text-lg md:text-2xl font-bold font-sans text-accent mb-8 uppercase tracking-widest">The Multiverse Shift</h2>
+                
+                <div class="dm-panel p-6 mb-8 max-w-2xl border-l-4 border-l-accent text-left mx-auto">
+                    <p class="text-lg md:text-2xl font-display italic opacity-90 text-gray-200">
+                        "Are you happy with your life?"
+                    </p>
+                </div>
+                
+                <button onclick="nextSlide()" class="dm-btn px-8 py-3 md:px-10 md:py-4 text-base md:text-xl flex items-center gap-2 mx-auto">
+                    Enter the Timeline
+                </button>
+            </div>
+        </section>
+
+        <!-- PAGE 2: WELCOME DIRECTIVE -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent">Directive 01</h2>
+                <h1 class="text-3xl md:text-5xl font-display uppercase mb-8 font-black text-white">Welcome, Guide</h1>
+                
+                <div class="dm-panel p-8 md:p-10 max-w-4xl w-full text-lg leading-relaxed text-gray-200 text-left">
+                    <p class="mb-4 font-bold text-xl border-b border-[var(--border-color)] pb-3 text-white">This is an Advanced (B2/C1) Sci-Fi Masterclass.</p>
+                    <p class="mb-6 opacity-90">Welcome to the Multiverse. This class explores the concept of the Butterfly Effect, alternate realities, and the psychological weight of our past decisions.</p>
+                    <div class="bg-black/40 p-5 rounded border border-[var(--border-color)] mt-4">
+                        <h3 class="font-display uppercase text-base mb-3 accent-text tracking-widest font-black">Grammar Targets:</h3>
+                        <ul class="list-none pl-2 font-sans text-base space-y-3 opacity-90">
+                            <li class="flex items-center gap-3"><span class="text-xl text-accent">🔀</span> <strong>Conditionals:</strong> 2nd, 3rd, and Mixed Conditionals to hypothesize about alternate paths.</li>
+                            <li class="flex items-center gap-3"><span class="text-xl text-accent">💭</span> <strong>Regret:</strong> Expressing deep regret using "Wish" and "If Only".</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 3: WARM UP 1 (BUTTERFLY EFFECT) -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent">Warm-Up Phase</h2>
+                <h1 class="text-3xl md:text-5xl font-display uppercase mb-8 font-black text-white">The Butterfly Effect</h1>
+                
+                <div class="dm-panel p-8 md:p-12 max-w-4xl w-full text-center">
+                    <span class="text-7xl mb-6 block drop-shadow-md opacity-80">🦋</span>
+                    <p class="text-xl md:text-2xl font-bold mb-8 leading-relaxed text-white font-display italic">
+                        "Think of one small decision you made years ago. How would your life be different today if you had chosen the opposite?"
+                    </p>
+                    
+                    <div class="speaking-starter mx-auto max-w-2xl">
+                        <p class="font-bold text-accent font-sans text-xs mb-2 tracking-widest uppercase">🗣️ Discussion Prompt:</p>
+                        <p class="italic text-lg font-medium text-gray-300">"If I hadn't [ past action ], I probably wouldn't be [ current state ] today."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 4: WARM UP 2 (PARALLEL UNIVERSES) -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent">Warm-Up Phase</h2>
+                <h1 class="text-3xl md:text-5xl font-display uppercase mb-8 font-black text-white">Infinite Possibilities</h1>
+                
+                <div class="dm-panel p-8 md:p-12 max-w-4xl w-full text-center border-t-2 border-accent">
+                    <span class="text-7xl mb-6 block drop-shadow-md opacity-80">🌌</span>
+                    <p class="text-xl md:text-2xl font-bold mb-8 leading-relaxed text-white font-display italic">
+                        "Do you believe in the Multiverse Theory? The idea that every time you make a choice, a new universe is created where you made the other choice?"
+                    </p>
+                    
+                    <div class="bg-black/30 p-4 border border-[var(--border-color)] rounded mt-4">
+                        <p class="font-bold text-gray-400 text-sm">Have the student argue for or against this concept before we dive into the sci-fi elements.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 5: THE MIND'S LEXICON 1 -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent">Psychological Vocabulary</h2>
+                <h1 class="text-3xl md:text-5xl font-display uppercase mb-6 font-black text-white drop-shadow-md">The Mind's Lexicon</h1>
+                <p class="text-center text-base mb-8 text-gray-400 font-bold">Click the glowing minds to reveal B2/C1 vocabulary for this sci-fi thriller.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full">
+                    <div class="dm-panel p-6 text-center interactive-card" onclick="this.classList.toggle('open')">
+                        <span class="text-5xl mb-3 block drop-shadow-[0_0_10px_var(--accent)]">🧠</span>
+                        <h3 class="font-display font-black text-2xl uppercase tracking-widest mb-1 text-white">Abduction</h3>
+                        <div class="reveal-content text-left border-t border-[var(--border-color)]">
+                            <p class="text-base mb-2 font-bold opacity-90 mt-3 text-gray-200">The action of taking someone away by force.</p>
+                            <p class="text-sm italic opacity-80 text-accent mb-2">"Jason's abduction changed everything."</p>
+                            <div class="follow-up-box mt-3 text-left">
+                                <p class="font-bold text-accent text-[10px] uppercase tracking-widest mb-1">🗣️ Discussion Prompt:</p>
+                                <p class="font-medium text-sm text-[var(--text-main)]">What is the most famous story of an alien abduction you've heard?</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dm-panel p-6 text-center interactive-card" onclick="this.classList.toggle('open')">
+                        <span class="text-5xl mb-3 block drop-shadow-[0_0_10px_var(--accent)]">👥</span>
+                        <h3 class="font-display font-black text-2xl uppercase tracking-widest mb-1 text-white">Doppelgänger</h3>
+                        <div class="reveal-content text-left border-t border-[var(--border-color)]">
+                            <p class="text-base mb-2 font-bold opacity-90 mt-3 text-gray-200">A biologically unrelated look-alike, or a double of a living person.</p>
+                            <p class="text-sm italic opacity-80 text-accent mb-2">"He was kidnapped by his own doppelgänger."</p>
+                            <div class="follow-up-box mt-3 text-left">
+                                <p class="font-bold text-accent text-[10px] uppercase tracking-widest mb-1">🗣️ Discussion Prompt:</p>
+                                <p class="font-medium text-sm text-[var(--text-main)]">If you met an exact replica of yourself, would you trust them?</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dm-panel p-6 text-center interactive-card" onclick="this.classList.toggle('open')">
+                        <span class="text-5xl mb-3 block drop-shadow-[0_0_10px_var(--accent)]">🛤️</span>
+                        <h3 class="font-display font-black text-2xl uppercase tracking-widest mb-1 text-white">Parallel</h3>
+                        <div class="reveal-content text-left border-t border-[var(--border-color)]">
+                            <p class="text-base mb-2 font-bold opacity-90 mt-3 text-gray-200">Occurring at the same time and in a similar way, but never intersecting.</p>
+                            <p class="text-sm italic opacity-80 text-accent mb-2">"There are infinite parallel universes."</p>
+                            <div class="follow-up-box mt-3 text-left">
+                                <p class="font-bold text-accent text-[10px] uppercase tracking-widest mb-1">🗣️ Discussion Prompt:</p>
+                                <p class="font-medium text-sm text-[var(--text-main)]">Do you think a parallel version of you is doing exactly what you are doing right now?</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dm-panel p-6 text-center interactive-card" onclick="this.classList.toggle('open')">
+                        <span class="text-5xl mb-3 block drop-shadow-[0_0_10px_var(--accent)]">🔄</span>
+                        <h3 class="font-display font-black text-2xl uppercase tracking-widest mb-1 text-white">To Swap</h3>
+                        <div class="reveal-content text-left border-t border-[var(--border-color)]">
+                            <p class="text-base mb-2 font-bold opacity-90 mt-3 text-gray-200">To exchange one thing for another.</p>
+                            <p class="text-sm italic opacity-80 text-accent mb-2">"The kidnapper wanted to swap lives with him."</p>
+                            <div class="follow-up-box mt-3 text-left">
+                                <p class="font-bold text-accent text-[10px] uppercase tracking-widest mb-1">🗣️ Discussion Prompt:</p>
+                                <p class="font-medium text-sm text-[var(--text-main)]">If you could swap lives with a famous person for one day, who would it be?</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 6: THE MIND'S LEXICON 2 (ACTION VERBS) -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent">Thriller Vocabulary</h2>
+                <h1 class="text-3xl md:text-5xl font-display uppercase mb-6 font-black text-white drop-shadow-md">Dark Actions</h1>
+                <p class="text-center text-base mb-8 text-gray-400 font-bold">These verbs appear frequently in psychological thrillers.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full">
+                    <div class="dm-panel p-6 text-center interactive-card border-t-2 border-red-500" onclick="this.classList.toggle('open')">
+                        <span class="text-4xl mb-3 block opacity-80">💉</span>
+                        <h3 class="font-display font-black text-2xl uppercase tracking-widest mb-1 text-white">To Drug</h3>
+                        <div class="reveal-content text-left border-t border-[var(--border-color)]">
+                            <p class="text-base mb-2 font-bold opacity-90 mt-3 text-gray-200">To administer a substance to someone to make them unconscious.</p>
+                            <p class="text-sm italic opacity-80 text-red-400 mb-2">"He drugged Jason before throwing him into the box."</p>
+                            <div class="follow-up-box mt-3 text-left">
+                                <p class="font-bold text-accent text-[10px] uppercase tracking-widest mb-1">🗣️ Discussion Prompt:</p>
+                                <p class="font-medium text-sm text-[var(--text-main)]">Why is this trope so common in mystery movies?</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dm-panel p-6 text-center interactive-card border-t-2 border-orange-500" onclick="this.classList.toggle('open')">
+                        <span class="text-4xl mb-3 block opacity-80">🪤</span>
+                        <h3 class="font-display font-black text-2xl uppercase tracking-widest mb-1 text-white">To Trap / Seal</h3>
+                        <div class="reveal-content text-left border-t border-[var(--border-color)]">
+                            <p class="text-base mb-2 font-bold opacity-90 mt-3 text-gray-200">To close securely so nothing can escape.</p>
+                            <p class="text-sm italic opacity-80 text-orange-400 mb-2">"He sealed him in another dimension."</p>
+                            <div class="follow-up-box mt-3 text-left">
+                                <p class="font-bold text-accent text-[10px] uppercase tracking-widest mb-1">🗣️ Discussion Prompt:</p>
+                                <p class="font-medium text-sm text-[var(--text-main)]">Have you ever felt trapped in a bad job or situation?</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 7: SYNOPSIS & PREP (UPDATED) -->
+        <section class="slide text-center">
+            <div class="page-content">
+                <div class="max-w-4xl mx-auto flex flex-col items-center w-full">
+                    <span class="text-7xl mb-6 block drop-shadow-[0_0_20px_var(--accent)] opacity-80">📖</span>
+                    <h2 class="font-sans font-bold tracking-widest mb-3 uppercase text-xs text-accent">The Plot</h2>
+                    <h1 class="text-4xl md:text-6xl font-display uppercase mb-8 font-black text-white">Synopsis</h1>
+                    
+                    <div class="dm-panel p-10 max-w-3xl border-l-8 border-l-accent text-xl leading-relaxed text-left w-full shadow-2xl relative overflow-hidden">
+                        <!-- Decorative glow -->
+                        <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-amber-600/10 rounded-full blur-3xl"></div>
+                        
+                        <p class="mb-6 text-white font-display italic">
+                            "Jason Dessen is a physicist, professor, and family man. One night, while walking home, he is abducted into an alternate version of his life."
+                        </p>
+                        <p class="mb-8 text-gray-300 font-sans">
+                            To get back to his true reality, he must journey through a mind-bending labyrinth of parallel universes to save his family from the most terrifying enemy imaginable: <strong class="text-white uppercase tracking-tighter">himself.</strong>
+                        </p>
+
+                        <div class="speaking-starter !bg-amber-950/20 !border-amber-600/50 mt-4">
+                            <p class="font-bold text-accent font-sans text-sm mb-3 tracking-widest uppercase">🗣️ The Multiverse Dilemma:</p>
+                            <p class="text-xl text-white font-display leading-snug">
+                                "If you could open a door to a reality where you are the most successful version of yourself, but you lose your current family, would you do it?"
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 8: THE SCREENING ROOM -->
+        <section class="slide h-full">
+            <div class="page-content w-full h-full">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent text-center">Surveillance Feed</h2>
+                <h1 class="text-3xl md:text-5xl font-display uppercase mb-6 text-center font-black text-white">Official Trailer</h1>
+                
+                <div class="w-full max-w-5xl mx-auto rounded-lg overflow-hidden border border-[var(--border-color)] bg-black shadow-2xl relative aspect-video shrink-0 video-container" id="vid-container">
+                    <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/j6ucGt_Xp14?rel=0" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <button class="mt-6 dm-btn-outline px-4 py-1 text-xs uppercase tracking-widest" onclick="document.getElementById('vid-container').classList.toggle('glitch-border')">Toggle Interface Glitch</button>
+            </div>
+        </section>
+
+        <!-- PAGE 9: COMPREHENSION CHECK 1 -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent text-center">Data Analysis</h2>
+                <h1 class="text-3xl md:text-5xl font-display uppercase mb-8 text-center font-black text-white">Motivations</h1>
+                
+                <div class="space-y-6 max-w-4xl mx-auto w-full">
+                    <div class="dm-panel p-8 interactive-card text-left" onclick="this.classList.toggle('open')">
+                        <p class="font-bold text-xl md:text-2xl text-white font-display italic">Q: What is the kidnapper's motivation?</p>
+                        <div class="reveal-content text-accent font-bold text-lg md:text-xl mt-4">
+                            [ RESPONSE: To steal Jason's life because he regrets his own choices. ]
+                        </div>
+                    </div>
+                    <div class="dm-panel p-8 interactive-card text-left" onclick="this.classList.toggle('open')">
+                        <p class="font-bold text-xl md:text-2xl text-white font-display italic">Q: What did the "other" Jason build?</p>
+                        <div class="reveal-content text-accent font-bold text-lg md:text-xl mt-4">
+                            [ RESPONSE: A box that allows access to all possible alternate realities. ]
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 10: COMPREHENSION CHECK 2 -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent text-center">Visual Analysis</h2>
+                <h1 class="text-3xl md:text-5xl font-display uppercase mb-8 text-center font-black text-white">The Atmosphere</h1>
+                
+                <div class="dm-panel p-10 max-w-4xl mx-auto w-full text-center border-t-2 border-[var(--border-color)]">
+                    <p class="text-2xl font-bold mb-6 text-white font-display italic">"How does the visual tone change when Jason wakes up in the alternate reality?"</p>
+                    <div class="bg-black/40 p-4 rounded text-left border border-[var(--border-color)]">
+                        <p class="text-lg opacity-90 text-gray-300">Help the student describe the shift from warm, cozy family colors to cold, sterile, and terrifying lighting.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- ACT III: THE MULTIVERSE SHIFT (WOW)        -->
+        <!-- ========================================== -->
+
+        <!-- PAGE 11: THE WARNING -->
+        <section class="slide text-center">
+            <div class="page-content">
+                <div class="max-w-4xl mx-auto flex flex-col items-center justify-center w-full">
+                    <span class="text-8xl mb-8 block drop-shadow-2xl">⚠️</span>
+                    <h2 class="font-sans font-bold tracking-widest mb-4 uppercase text-xs text-accent animate-pulse">Critical Status</h2>
+                    <h1 class="text-5xl md:text-7xl font-display uppercase mb-8 font-black text-white">Reality Stolen</h1>
+                    <div class="dm-panel p-10 max-w-3xl border-t-2 border-t-accent text-2xl leading-relaxed font-bold font-display italic text-gray-200 shadow-2xl">
+                        "Jason's reality has been stolen. To get his family back, he must access the infinite paths of the multiverse."
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 12: ENTER THE BOX (WOW MECHANIC) -->
+        <section class="slide">
+            <div class="page-content">
+                <div class="w-full max-w-3xl mx-auto flex flex-col items-center justify-center text-center h-full">
+                    <h2 class="font-sans font-bold tracking-widest mb-4 uppercase text-xs text-accent animate-pulse">System Override</h2>
+                    <h1 class="text-5xl md:text-7xl font-display uppercase mb-10 font-black text-white drop-shadow-lg">The Box</h1>
+                    
+                    <p class="text-xl font-bold mb-16 opacity-90 max-w-xl text-gray-300">
+                        "Behind this door lies every choice you never made. Are you ready to see them?"
+                    </p>
+                    
+                    <div class="relative w-full max-w-sm group">
+                        <div class="absolute inset-0 bg-black shadow-[0_0_50px_rgba(0,0,0,0.9)] transform group-hover:scale-105 transition-transform duration-500"></div>
+                        <button onclick="enterTheBox()" class="relative z-10 w-full h-64 bg-black border-4 border-gray-800 flex items-center justify-center text-white font-display text-3xl uppercase tracking-widest hover:border-white transition-colors duration-500" id="box-btn">
+                            Enter<br>The Box
+                        </button>
+                    </div>
+                    <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-8 font-mono">Warning: This action cannot be undone.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- THEME SHIFTS TO MULTIVERSE CORRIDOR HERE   -->
+        <!-- ========================================== -->
+
+        <!-- PAGE 13: GRAMMAR 1 - CONDITIONALS -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent">Grammar Module</h2>
+                <h1 class="text-4xl md:text-5xl font-display uppercase mb-8 font-black text-white">Navigating Realities</h1>
+                
+                <div class="dm-panel p-8 md:p-10 max-w-5xl mx-auto w-full text-left">
+                    <p class="text-lg font-bold mb-8 text-gray-300">We use different Conditionals to navigate alternate lives and hypothetical pasts.</p>
+                    
+                    <div class="space-y-6">
+                        <div class="border-l-4 border-blue-500 pl-4 bg-black/40 p-4 rounded">
+                            <p class="text-xs uppercase tracking-widest text-blue-400 font-bold mb-1 font-mono">2nd Conditional (Unreal Present)</p>
+                            <p class="text-xl text-white">"If I <span class="text-blue-400">were</span> single, I <span class="text-blue-400">would travel</span> more."</p>
+                        </div>
+                        <div class="border-l-4 border-purple-500 pl-4 bg-black/40 p-4 rounded">
+                            <p class="text-xs uppercase tracking-widest text-purple-400 font-bold mb-1 font-mono">3rd Conditional (Unreal Past)</p>
+                            <p class="text-xl text-white">"If he <span class="text-purple-400">had built</span> the box, he <span class="text-purple-400">would have lost</span> his family."</p>
+                        </div>
+                        <div class="border-l-4 border-green-500 pl-4 bg-black/40 p-4 rounded">
+                            <p class="text-xs uppercase tracking-widest text-green-400 font-bold mb-1 font-mono">Mixed Conditional (Past affects Present)</p>
+                            <p class="text-xl text-white">"If I <span class="text-green-400">hadn't married</span> her (past), I <span class="text-green-400">would be</span> a CEO today (present)."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 14: CORRIDOR OF DOORS (MINIGAME) -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent">Interactive Challenge</h2>
+                <h1 class="text-4xl md:text-5xl font-display uppercase mb-8 font-black text-white drop-shadow-[0_0_10px_var(--accent)]">Corridor of Doors</h1>
+                <p class="text-center text-sm mb-10 text-gray-400 max-w-2xl mx-auto uppercase tracking-widest font-mono">Choose the correct conditional structure to unlock the door and see the alternate life inside.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
+                    <!-- Door 1 (3rd Cond) -->
+                    <div class="neon-door" onclick="unlockDoor(this, 3)">
+                        <div class="z-10 px-4 text-center">
+                            <p class="font-bold text-gray-400 mb-4 font-sans text-sm">"If I had stayed in the bar, I ____ abducted."</p>
+                            <span class="text-xs opacity-50 block mb-2">A) wouldn't be</span>
+                            <span class="text-xs opacity-50 block">B) wouldn't have been</span>
+                        </div>
+                        <div class="door-content">
+                            <span class="text-4xl mb-2">👨‍👩‍👦</span>
+                            <p class="font-display text-green-400 font-bold text-center">Unlocked: 3rd Cond.<br>He avoided the kidnapper and went home to his family.</p>
+                        </div>
+                    </div>
+                    <!-- Door 2 (Mixed) -->
+                    <div class="neon-door" onclick="unlockDoor(this, 1)">
+                        <div class="z-10 px-4 text-center">
+                            <p class="font-bold text-gray-400 mb-4 font-sans text-sm">"If she hadn't gotten pregnant, she ____ a famous artist now."</p>
+                            <span class="text-xs opacity-50 block mb-2">A) would be</span>
+                            <span class="text-xs opacity-50 block">B) would have been</span>
+                        </div>
+                        <div class="door-content">
+                            <span class="text-4xl mb-2">🎨</span>
+                            <p class="font-display text-green-400 font-bold text-center">Unlocked: Mixed Cond.<br>She chose her career and became a world-renowned painter.</p>
+                        </div>
+                    </div>
+                    <!-- Door 3 (2nd Cond) -->
+                    <div class="neon-door" onclick="unlockDoor(this, 2)">
+                        <div class="z-10 px-4 text-center">
+                            <p class="font-bold text-gray-400 mb-4 font-sans text-sm">"If the box ____ real, physics would be broken."</p>
+                            <span class="text-xs opacity-50 block mb-2">A) was</span>
+                            <span class="text-xs opacity-50 block">B) were</span>
+                        </div>
+                        <div class="door-content">
+                            <span class="text-4xl mb-2">🌌</span>
+                            <p class="font-display text-green-400 font-bold text-center">Unlocked: 2nd Cond.<br>The multiverse collapses into a single dimension.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 15: APPLIED GRAMMAR (YOUR DOORS) -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent">Speaking Module</h2>
+                <h1 class="text-4xl md:text-5xl font-display uppercase mb-8 font-black text-white">Create Your Door</h1>
+                
+                <div class="dm-panel p-10 max-w-4xl mx-auto w-full text-center">
+                    <p class="text-xl font-bold mb-8 text-gray-300">Create a Mixed Conditional sentence about your own life.</p>
+                    
+                    <div class="bg-black/30 p-6 rounded text-left border border-[var(--border-color)]">
+                        <p class="font-bold text-accent font-mono text-sm mb-2 tracking-widest">🗣️ Example Prompt:</p>
+                        <p class="italic text-lg text-white">"If I had chosen a different career at university (past), I would be richer/happier now (present)."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 16: GRAMMAR 2 - WISH & IF ONLY -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent">Grammar Module</h2>
+                <h1 class="text-3xl md:text-5xl font-display uppercase mb-8 font-black text-white">Expressing Regret</h1>
+                
+                <div class="dm-panel p-8 md:p-12 max-w-4xl mx-auto w-full text-center">
+                    <p class="text-lg font-bold mb-8 text-gray-300">To express deep regrets about the past, we use <strong class="text-white">Wish</strong> or <strong class="text-white">If Only</strong> + Past Perfect.</p>
+                    
+                    <div class="space-y-6 text-left max-w-2xl mx-auto">
+                        <div class="bg-black/50 p-6 rounded border border-[var(--border-color)]">
+                            <p class="text-2xl text-white font-display italic">"I <span class="text-red-400 font-bold">wish</span> I <span class="text-red-400 font-bold">had spent</span> more time with them."</p>
+                        </div>
+                        <div class="bg-black/50 p-6 rounded border border-[var(--border-color)]">
+                            <p class="text-2xl text-white font-display italic">"<span class="text-red-400 font-bold">If only</span> I <span class="text-red-400 font-bold">hadn't opened</span> that door."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 17: REGRET RE-WRITER -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent">Interactive Challenge</h2>
+                <h1 class="text-4xl md:text-5xl font-display uppercase mb-8 font-black text-white">The Regret Re-writer</h1>
+                <p class="text-center text-sm mb-8 text-gray-400 max-w-2xl mx-auto uppercase tracking-widest font-mono">Rewrite the past facts into expressions of regret. Click to reveal.</p>
+
+                <div class="space-y-6 max-w-4xl mx-auto w-full text-lg font-bold">
+                    <div class="dm-panel p-6 border-l-4 border-red-500 interactive-card text-left" onclick="this.classList.toggle('open')">
+                        <p class="text-gray-300 mb-2">Fact: I didn't study enough for the test.</p>
+                        <p class="text-white">Rewrite: I wish I <span class="border-b-2 border-[var(--border-color)] px-6 mx-2 text-transparent">___</span>.</p>
+                        <div class="reveal-content mt-4 pt-4 border-t border-[var(--border-color)] text-accent font-display text-2xl">> had studied enough</div>
+                    </div>
+                    <div class="dm-panel p-6 border-l-4 border-red-500 interactive-card text-left" onclick="this.classList.toggle('open')">
+                        <p class="text-gray-300 mb-2">Fact: He built the dangerous box.</p>
+                        <p class="text-white">Rewrite: If only he <span class="border-b-2 border-[var(--border-color)] px-6 mx-2 text-transparent">___</span>.</p>
+                        <div class="reveal-content mt-4 pt-4 border-t border-[var(--border-color)] text-accent font-display text-2xl">> hadn't built the dangerous box</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 18: SCRIPT ANALYSIS -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent">Document Review</h2>
+                <h1 class="text-3xl md:text-5xl font-display uppercase mb-8 font-black text-white">The Core Question</h1>
+                
+                <div class="dm-panel p-12 text-center max-w-4xl w-full shadow-2xl border-t-2 border-accent">
+                    <p class="text-4xl md:text-5xl font-black text-white italic mb-10 font-display drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                        "Are you happy with your life?"
+                    </p>
+                    
+                    <div class="text-left">
+                        <p class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-3 font-mono">Discussion Prompt:</p>
+                        <p class="text-xl text-gray-300 font-light leading-relaxed">
+                            Why is this the most dangerous question a Doppelgänger can ask? What happens to a person when they realize they made the "wrong" choice 15 years ago?
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 19: CONNECTED SPEECH (WOULD'VE) -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent">Pronunciation</h2>
+                <h1 class="text-3xl md:text-5xl font-display uppercase mb-8 font-black text-white">Fast Sci-Fi Speech</h1>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto w-full">
+                    <div class="dm-panel p-8 text-center flex flex-col justify-center">
+                        <span class="text-xs uppercase tracking-widest text-gray-500 mb-4 font-mono border-b border-gray-700 pb-2">Formal</span>
+                        <p class="text-2xl font-bold text-white mb-2">"I would have stopped him."</p>
+                        <p class="text-2xl font-bold text-white">"We could have been happy."</p>
+                    </div>
+                    <div class="dm-panel p-8 text-center border-l-4 border-accent bg-accent/5 flex flex-col justify-center">
+                        <span class="text-xs uppercase tracking-widest text-accent mb-4 font-mono border-b border-accent/30 pb-2">Real Life (Contractions)</span>
+                        <p class="text-3xl font-black font-display text-accent mb-2">"I would've stopped him."</p>
+                        <p class="text-3xl font-black font-display text-accent">"We could've been happy."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- ACT V: IDENTITY & ROLEPLAY                 -->
+        <!-- ========================================== -->
+
+        <!-- PAGE 20: PHILOSOPHICAL DEBATE -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent">Philosophy Dept.</h2>
+                <h1 class="text-3xl md:text-5xl font-display uppercase mb-8 font-black text-white">The Ship of Theseus</h1>
+                
+                <div class="dm-panel p-10 max-w-4xl mx-auto w-full text-center">
+                    <span class="text-6xl mb-6 block opacity-80 drop-shadow-[0_0_15px_var(--accent)]">⛵</span>
+                    <p class="text-xl font-light leading-relaxed mb-8 text-gray-200">
+                        "If Jason 2 has the exact same DNA, the same memories up to a certain point, and looks exactly like Jason 1... <strong class="text-white">is he technically the same person?</strong>"
+                    </p>
+                    
+                    <div class="bg-black/40 p-6 rounded text-left border border-[var(--border-color)]">
+                        <p class="font-bold text-accent font-mono text-sm mb-2 tracking-widest">🗣️ The Moral Dilemma:</p>
+                        <p class="italic text-lg text-white">If Jason 2 is exactly the same, does he have the right to steal that family if he treats them well?</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 21: ROLEPLAY 1 (THE CONFRONTATION) -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent">Interactive Speaking</h2>
+                <h1 class="text-3xl md:text-5xl font-display uppercase mb-8 font-black text-white">The Confrontation</h1>
+                
+                <div class="flex flex-col md:flex-row gap-6 w-full max-w-5xl mx-auto min-h-[40vh]">
+                    <!-- Teacher (Jason 2) -->
+                    <div class="flex-1 dm-panel p-8 flex flex-col justify-center text-center border-t-2 border-purple-500 bg-purple-900/10">
+                        <h3 class="text-2xl font-black mb-2 uppercase text-purple-400 font-display tracking-widest">Teacher</h3>
+                        <p class="text-xs opacity-50 tracking-widest mb-6 font-bold uppercase font-mono">Plays: Jason 2 (The Kidnapper)</p>
+                        <p class="text-lg italic mb-4 font-normal text-white">"I gave you my successful life! You should thank me."</p>
+                        <p class="text-lg italic font-normal text-white">"I just took the family I deserved. I would've been a better father anyway."</p>
+                    </div>
+                    
+                    <!-- Student (Jason 1) -->
+                    <div class="flex-1 dm-panel p-8 flex flex-col justify-center text-center border-t-2 border-accent bg-accent/5">
+                        <h3 class="text-2xl font-black mb-2 uppercase text-accent font-display tracking-widest">Student</h3>
+                        <p class="text-xs opacity-50 tracking-widest mb-6 font-bold uppercase font-mono">Plays: Jason 1 (The Victim)</p>
+                        <p class="text-lg italic mb-4 font-bold text-white">"You stole my life! If you hadn't been so selfish..."</p>
+                        <p class="text-lg italic font-bold text-white">"If you had loved your own life, you wouldn't have built that box!"</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 22: ROLEPLAY 2 (THE SUSPICIOUS WIFE) -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent">Interactive Speaking</h2>
+                <h1 class="text-3xl md:text-5xl font-display uppercase mb-8 font-black text-white">The Suspicion</h1>
+                
+                <div class="flex flex-col md:flex-row gap-6 w-full max-w-5xl mx-auto min-h-[40vh]">
+                    <!-- Teacher (Wife) -->
+                    <div class="flex-1 dm-panel p-8 flex flex-col justify-center text-center border-t-2 border-orange-500 bg-orange-900/10">
+                        <h3 class="text-2xl font-black mb-2 uppercase text-orange-400 font-display tracking-widest">Teacher</h3>
+                        <p class="text-xs opacity-50 tracking-widest mb-6 font-bold uppercase font-mono">Plays: The Wife (Suspicious)</p>
+                        <p class="text-lg italic mb-4 font-normal text-white">"You've been acting weird lately. You didn't remember our anniversary."</p>
+                        <p class="text-lg italic font-normal text-white">"Who are you? You look like my husband, but you don't feel like him."</p>
+                    </div>
+                    
+                    <!-- Student (Jason 2) -->
+                    <div class="flex-1 dm-panel p-8 flex flex-col justify-center text-center border-t-2 border-accent bg-accent/5">
+                        <h3 class="text-2xl font-black mb-2 uppercase text-accent font-display tracking-widest">Student</h3>
+                        <p class="text-xs opacity-50 tracking-widest mb-6 font-bold uppercase font-mono">Plays: Jason 2 (Lying)</p>
+                        <p class="text-lg italic mb-4 font-bold text-white">"I am your husband. I've just been very stressed at work."</p>
+                        <p class="text-lg italic font-bold text-white">"If I had more time to relax, I wouldn't be like this."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 23: WATERCOOLER TALK (PERFECT REALITY) -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent">Open Debate</h2>
+                <h1 class="text-3xl md:text-5xl font-display uppercase mb-8 font-black text-white">The Perfect Reality</h1>
+                
+                <div class="dm-panel p-12 max-w-4xl mx-auto w-full text-center border-t-2 border-green-500 shadow-[0_0_40px_rgba(34,197,94,0.1)]">
+                    <span class="text-6xl mb-6 block opacity-80">🌌</span>
+                    <p class="text-2xl font-light leading-relaxed mb-10 text-gray-200">
+                        "If you found the Box and could open a door to a reality where you achieved your biggest unfulfilled dream... <strong class="text-white">would you walk through and stay there forever?</strong>"
+                    </p>
+                    <button class="dm-btn px-10 py-4 text-sm w-full max-w-md" onclick="triggerPraise('MIND BENDING! 🧠')">Discuss with Student</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 24: HOMEWORK DIRECTIVE -->
+        <section class="slide">
+            <div class="page-content">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent">Post-Class Assignment</h2>
+                <h1 class="text-3xl md:text-5xl font-display uppercase mb-8 font-black text-white">The Multiverse Letter</h1>
+                
+                <div class="dm-panel p-10 max-w-3xl mx-auto w-full relative bg-black/60 border border-[var(--border-color)]">
+                    <div class="absolute -top-4 -right-4 bg-accent text-[var(--btn-text)] font-black uppercase tracking-widest px-4 py-2 text-xs font-mono shadow-[0_0_10px_var(--accent)]">ASSIGNMENT</div>
+                    <h3 class="text-2xl font-black mb-6 uppercase border-b border-gray-800 pb-4 tracking-widest font-display text-white">Instructions:</h3>
+                    <p class="text-lg leading-loose font-light mb-6 text-gray-300">
+                        "Write a 150-word letter to an alternate version of yourself in another universe."
+                    </p>
+                    <ul class="list-disc pl-8 text-base font-medium space-y-3 mb-8 text-gray-400">
+                        <li>Tell them about the path you chose using <strong class="text-accent">Mixed/3rd Conditionals</strong>.</li>
+                        <li>Ask them about their life using <strong class="text-accent">2nd Conditionals</strong>.</li>
+                        <li>Express one thing you <strong class="text-accent">Wish</strong> you had done differently.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 25: END OF THE CORRIDOR -->
+        <section class="slide">
+            <div class="page-content items-center text-center">
+                <h2 class="font-sans font-bold tracking-widest mb-2 uppercase text-xs text-accent">Performance Review</h2>
+                <h1 class="text-4xl md:text-6xl font-display uppercase mb-8 font-black text-white">End of the Corridor</h1>
+                
+                <div class="space-y-4 max-w-xl w-full text-sm font-medium text-left mb-12 text-gray-300 font-mono">
+                    <label class="flex items-center gap-4 p-4 dm-panel rounded cursor-pointer border border-[var(--border-color)] hover:bg-white/5 transition-colors">
+                        <input type="checkbox" class="w-5 h-5 accent-accent">
+                        <span class="mt-1">Conditionals unlocked and mapped.</span>
+                    </label>
+                    <label class="flex items-center gap-4 p-4 dm-panel rounded cursor-pointer border border-[var(--border-color)] hover:bg-white/5 transition-colors">
+                        <input type="checkbox" class="w-5 h-5 accent-accent">
+                        <span class="mt-1">Regret expressed (Wish/If Only).</span>
+                    </label>
+                    <label class="flex items-center gap-4 p-4 dm-panel rounded cursor-pointer border border-[var(--border-color)] hover:bg-white/5 transition-colors">
+                        <input type="checkbox" class="w-5 h-5 accent-accent">
+                        <span class="mt-1">Doppelgänger confronted in Roleplay.</span>
+                    </label>
+                </div>
+
+                <div class="border-t border-gray-800 pt-8 w-full flex flex-col items-center">
+                    <p class="mb-6 text-sm font-bold max-w-xl mx-auto font-sans text-gray-500 uppercase tracking-widest">Rate the mind-bending nature of this trailer:</p>
+                    <div class="flex justify-center gap-3 md:gap-6 mb-8">
+                        <button onclick="rate(1)" class="box-rating text-5xl md:text-7xl grayscale opacity-30 hover:scale-110 transition-transform filter drop-shadow-md">⬛</button>
+                        <button onclick="rate(2)" class="box-rating text-5xl md:text-7xl grayscale opacity-30 hover:scale-110 transition-transform filter drop-shadow-md">⬛</button>
+                        <button onclick="rate(3)" class="box-rating text-5xl md:text-7xl grayscale opacity-30 hover:scale-110 transition-transform filter drop-shadow-md">⬛</button>
+                        <button onclick="rate(4)" class="box-rating text-5xl md:text-7xl grayscale opacity-30 hover:scale-110 transition-transform filter drop-shadow-md">⬛</button>
+                        <button onclick="rate(5)" class="box-rating text-5xl md:text-7xl grayscale opacity-30 hover:scale-110 transition-transform filter drop-shadow-md">⬛</button>
+                    </div>
+                    <div id="rat-hub" class="hidden p-3 dm-panel rounded font-bold text-sm text-center uppercase tracking-widest text-accent w-max mx-auto font-mono">> RATED <span id="star-c" class="text-white mx-2 font-black text-xl"></span> BOXES.</div>
+                    
+                    <button onclick="window.location.reload();" class="mt-10 dm-btn px-8 py-3 text-sm shadow-[0_0_20px_rgba(56,189,248,0.4)]">
+                        Close the Door (Restart)
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- BOTTOM BAR (Pagination) -->
+    <footer class="fixed bottom-0 left-0 w-full h-16 md:h-20 bg-black/60 backdrop-blur-xl border-t border-[var(--border-color)] z-40 flex items-center justify-between px-4 md:px-8 transition-colors duration-1000" style="cursor: default;">
+        <div class="hidden md:flex flex-1 items-center gap-2">
+            <span class="font-black text-xl tracking-widest uppercase text-accent font-display">WOLFLIX</span>
+            <span class="text-xs uppercase tracking-widest border-l border-[var(--border-color)] pl-2 opacity-50 font-bold font-mono">Masterclass</span>
+        </div>
+
+        <div class="flex items-center justify-center flex-1 gap-4 md:gap-6">
+            <button onclick="prevSlide()" class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center border border-[var(--border-color)] rounded hover:bg-[var(--accent)] hover:text-[var(--btn-text)] transition-colors bg-white/5" title="Previous Phase">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7"/></svg>
+            </button>
+            <div class="w-24 md:w-32 bg-black/50 h-2 rounded-full overflow-hidden border border-[var(--border-color)]">
+                <div id="lcd-prog" class="h-full bg-[var(--accent)] w-0 transition-all duration-300 shadow-[0_0_10px_var(--accent)]"></div>
+            </div>
+            <button onclick="nextSlide()" class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center border border-[var(--border-color)] rounded hover:bg-[var(--accent)] hover:text-[var(--btn-text)] transition-colors bg-white/5" title="Next Phase">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+            </button>
+        </div>
+
+        <div class="flex-1 text-right font-bold tracking-widest uppercase text-sm md:text-base font-mono text-gray-400">
+            Page <span id="page-num" class="text-accent ml-1 font-black">01</span> <span class="opacity-50 text-xs font-sans">/ 25</span>
+        </div>
+    </footer>
+
+    <!-- SLIDE-OUT NOTEPAD -->
+    <aside id="notepad-panel" class="fixed top-0 right-0 w-full max-w-md h-full bg-[var(--bg-top)] border-l border-[var(--border-color)] z-50 translate-x-full flex flex-col shadow-[-10px_0px_50px_rgba(0,0,0,0.9)] transition-transform duration-500 text-[var(--text-main)]">
+        <div class="p-6 border-b border-[var(--border-color)] bg-[var(--panel-bg)] flex justify-between items-center">
+            <h2 class="font-black uppercase tracking-widest text-base flex items-center gap-2 text-accent font-display">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                Timeline Notes
+            </h2>
+            <button onclick="toggleNotepad()" class="text-muted hover:text-white font-black text-2xl px-2">✕</button>
+        </div>
+        <textarea class="flex-1 w-full bg-transparent p-8 font-mono font-medium text-lg leading-relaxed outline-none resize-none placeholder:text-gray-600" placeholder="Type timeline variations or student feedback here..."></textarea>
+    </aside>
+
+    <!-- JS LOGIC -->
+    <script>
+        // --- 1. Pagination Logic ---
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function updateUI() {
+            document.getElementById('page-num').innerText = (currentSlide + 1).toString().padStart(2, '0');
+            
+            const prog = document.getElementById('lcd-prog');
+            if(totalSlides > 1) prog.style.width = `${(currentSlide / (totalSlides - 1)) * 100}%`;
+            
+            // Ativa Multiverse Mode (The Box) a partir da página 13 (índice 12 - Enter The Box já ativado)
+            if (currentSlide >= 12 && !document.body.classList.contains('theme-box')) {
+                document.body.classList.add('theme-box');
+                document.getElementById('header-title').innerText = "MULTIVERSE CORRIDOR";
+                document.getElementById('header-icon').innerText = "🚪";
+            } else if (currentSlide < 11 && document.body.classList.contains('theme-box')) {
+                document.body.classList.remove('theme-box');
+                document.getElementById('header-title').innerText = "Teacher's Guide";
+                document.getElementById('header-icon').innerText = "🕰️";
+                const boxBtn = document.getElementById('box-btn');
+                if(boxBtn) boxBtn.disabled = false;
+            }
+
+            // Pausa o iframe se sair da página do vídeo
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                const src = iframe.src;
+                iframe.src = src; 
+            });
+
+            document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goToSlide(i) {
+            if (i < 0 || i >= totalSlides) return;
+            slides.forEach(s => s.classList.remove('active'));
+            currentSlide = i;
+            slides[currentSlide].classList.add('active');
+            updateUI();
+        }
+
+        function nextSlide() { goToSlide(currentSlide + 1); }
+        function prevSlide() { goToSlide(currentSlide - 1); }
+
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowRight') nextSlide();
+            if(e.key === 'ArrowLeft') prevSlide();
+        });
+
+        // --- 2. Fullscreen & Notepad ---
+        function toggleFullscreen() {
+            const doc = window.document;
+            const docEl = doc.documentElement;
+            const req = docEl.requestFullscreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+            const exit = doc.exitFullscreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+            try {
+                if (!doc.fullscreenElement) {
+                    const promise = req ? req.call(docEl) : null;
+                    if (promise && promise.catch) promise.catch(err => console.warn(err));
+                } else {
+                    const promise = exit ? exit.call(doc) : null;
+                    if (promise && promise.catch) promise.catch(err => console.warn(err));
+                }
+            } catch (err) { console.warn(err); }
+        }
+
+        function toggleNotepad() {
+            document.getElementById('notepad-panel').classList.toggle('translate-x-full');
+        }
+
+        // --- 3. Praise System ---
+        function triggerPraise(main, icon) {
+            const popup = document.getElementById('praise-popup');
+            const textContainer = document.getElementById('praise-text');
+            
+            textContainer.innerHTML = `${main} <span class="text-white ml-2">${icon}</span>`;
+            popup.classList.remove('hidden');
+            
+            popup.classList.remove('praise-anim');
+            void popup.offsetWidth;
+            popup.classList.add('praise-anim');
+            
+            setTimeout(() => {
+                popup.classList.remove('praise-anim');
+                popup.classList.add('hidden');
+            }, 2000);
+        }
+
+        // --- 4. THE BOX EVENT (Transition) ---
+        function enterTheBox() {
+            const btn = document.getElementById('box-btn');
+            if (btn) btn.disabled = true;
+            
+            const overlay = document.getElementById('glitch-overlay');
+            overlay.classList.add('glitch-anim');
+            
+            // Troca o tema visual no meio do glitch
+            setTimeout(() => {
+                document.body.classList.add('theme-box');
+                document.getElementById('header-title').innerText = "MULTIVERSE CORRIDOR";
+                document.getElementById('header-icon').innerText = "🚪";
+            }, 750);
+
+            // Avança slide automaticamente
+            setTimeout(() => {
+                nextSlide(); 
+                overlay.classList.remove('glitch-anim');
+            }, 1600);
+        }
+
+        // --- 5. Minigame: Neon Doors ---
+        function unlockDoor(doorEl, type) {
+            if (doorEl.classList.contains('unlocked')) return;
+            
+            doorEl.classList.add('unlocked');
+            triggerPraise('REALITY UNLOCKED!', '🚪');
+        }
+
+        // --- 6. Rating (Black Boxes) ---
+        function rate(n) {
+            const drops = document.querySelectorAll('.box-rating');
+            drops.forEach((d, i) => {
+                d.classList.toggle('grayscale', i >= n);
+                d.classList.toggle('opacity-30', i >= n);
+                if(i < n) d.style.filter = "drop-shadow(0 0 15px rgba(56,189,248,0.8))";
+                else d.style.filter = "none";
+            });
+            document.getElementById('rat-hub').classList.remove('hidden');
+            document.getElementById('star-c').innerText = n;
+        }
+
+        // Initialize
+        updateUI();
+    </script>
+</body>
+</html>
